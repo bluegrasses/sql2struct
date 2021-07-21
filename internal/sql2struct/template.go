@@ -5,6 +5,7 @@ import (
 	"os"
 	"text/template"
 
+	"github.com/bluegrasses/sql2struct/internal/tools"
 	"github.com/bluegrasses/sql2struct/internal/word"
 )
 
@@ -23,6 +24,9 @@ type {{.TableName | ToCamelCase}} struct {
 	func (model {{.TableName | ToCamelCase}}) TableName() string {
 		return "{{.TableName}}"
 	}`
+
+// 定义模型文件的路径
+const dir = "./models"
 
 type StructTemplate struct {
 	strcutTpl string
@@ -71,7 +75,21 @@ func (t *StructTemplate) Generate(tableName string, tplColumns []*StructColumn) 
 	}
 
 	// err := tpl.Execute(os.Stdout, tplDB)
+	exist, err := tools.PathExists(dir)
+	if err != nil {
+		fmt.Printf("get dir error![%v]\n", err)
+		return err
+	}
+	if !exist {
+		err := os.Mkdir(dir, os.ModePerm)
+		if err != nil {
+			fmt.Printf("mkdir failed![%v]\n", err)
+		} else {
+			fmt.Printf("mkdir success!\n")
+		}
+	}
 	filename := "models/" + tplDB.TableName + ".go"
+
 	f, err := os.Create(filename)
 	if err != nil {
 		return err
