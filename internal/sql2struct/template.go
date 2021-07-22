@@ -26,7 +26,7 @@ type {{.TableName | ToCamelCase}} struct {
 	}`
 
 // 定义模型文件的路径
-const dir = "./models"
+const dir = "./internal/models/"
 
 type StructTemplate struct {
 	strcutTpl string
@@ -88,7 +88,8 @@ func (t *StructTemplate) Generate(tableName string, tplColumns []*StructColumn) 
 			fmt.Printf("mkdir success!\n")
 		}
 	}
-	filename := "models/" + tplDB.TableName + ".go"
+	fname := word.UnderscoreToUppercamelCase(tplDB.TableName)
+	filename := dir + fname + ".go"
 
 	f, err := os.Create(filename)
 	if err != nil {
